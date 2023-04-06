@@ -958,6 +958,7 @@ private:
 #endif
 
     // ArduPlane.cpp
+    void test_func(void);
     void disarm_if_autoland_complete();
     float tecs_hgt_afe(void);
     void efi_update(void);

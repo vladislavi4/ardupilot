@@ -48,6 +48,7 @@ const AP_Scheduler::Task Plane::scheduler_tasks[] = {
     SCHED_TASK(read_airspeed,          10,    100),
     SCHED_TASK(update_alt,             10,    200),
     SCHED_TASK(adjust_altitude_target, 10,    200),
+    SCHED_TASK(test_func,               1,    400),
 #if ADVANCED_FAILSAFE == ENABLED
     SCHED_TASK(afs_fs_check,           10,    100),
 #endif
@@ -253,6 +254,20 @@ void Plane::afs_fs_check(void)
 #include <AP_IOMCU/AP_IOMCU.h>
 extern AP_IOMCU iomcu;
 #endif
+
+void Plane::test_func()
+{
+    static uint16_t total_distance = 0;
+    if(auto_state.wp_distance - 1000.0 > 0.0){
+        uint16_t cur_dist = ((uint16_t)auto_state.wp_distance / 1000.0) - total_distance;
+        if(cur_dist){
+            total_distance += cur_dist;
+            gcs().send_text(MAV_SEVERITY_INFO, "STATUSTEXT: Total Distance Traveled %dkm", total_distance);
+        }
+    }
+    //mavlink_message_t msg = {0};
+    //mavlink_msg_statustext_send_struct(MAVLINK_COMM_0, (const mavlink_statustext_t*)msg);
+}
 
 void Plane::one_second_loop()
 {
